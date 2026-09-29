@@ -1,10 +1,49 @@
 <?php
 
-$pageTitle = 'Thêm sản phẩm';
+$pageTitle = 'Sửa sản phẩm';
 
 require_once '/var/www/src/config/database.php';
 
 $error = '';
+
+$productID = isset($_GET['id'])
+    ? (int) $_GET['id']
+    : 0;
+
+if ($productID <= 0) {
+    die('Mã sản phẩm không hợp lệ.');
+}
+
+/*
+ * Đọc dữ liệu hiện tại của sản phẩm
+ */
+$sql = "
+    SELECT
+        ProductCode,
+        ProductName,
+        Description,
+        Unit,
+        Price,
+        StockQuantity,
+        IsActive,
+        SupplierID,
+        CategoryID
+    FROM products
+    WHERE ProductID = ?
+";
+
+$stmt = $connection->prepare($sql);
+$stmt->bind_param('i', $productID);
+$stmt->execute();
+
+$result = $stmt->get_result();
+$product = $result->fetch_assoc();
+
+$stmt->close();
+
+if (!$product) {
+    die('Không tìm thấy sản phẩm.');
+}
 
 $sqlCategories = "
     SELECT CategoryID, CategoryName
@@ -23,7 +62,6 @@ $sqlSuppliers = "
 $suppliers = $connection->query($sqlSuppliers);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     $productCode = trim($_POST['product_code'] ?? '');
     $productName = trim($_POST['product_name'] ?? '');
     $description = trim($_POST['description'] ?? '');
@@ -37,99 +75,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $isActive = isset($_POST['is_active']) ? 1 : 0;
 
-    if ($productCode === '') {
-        $error = 'Mã sản phẩm không được để trống.';
+    $sql = "
+        UPDATE products
+        SET
+            ProductCode = ?,
+            ProductName = ?,
+            Description = ?,
+            Unit = ?,
+            Price = ?,
+            StockQuantity = ?,
+            IsActive = ?,
+            SupplierID = ?,
+            CategoryID = ?
+        WHERE ProductID = ?
+    ";
 
-    } elseif ($productName === '') {
-        $error = 'Tên sản phẩm không được để trống.';
+    $stmt = $connection->prepare($sql);
 
-    } elseif ($price < 0) {
-        $error = 'Giá sản phẩm không hợp lệ.';
+    $stmt->bind_param(
+        'ssssdiiiii',
+        $productCode,
+        $productName,
+        $description,
+        $unit,
+        $price,
+        $stockQuantity,
+        $isActive,
+        $supplierID,
+        $categoryID,
+        $productID
+    );
 
-    } elseif ($stockQuantity < 0) {
-        $error = 'Số lượng tồn kho không hợp lệ.';
-
-    } elseif ($categoryID <= 0) {
-        $error = 'Vui lòng chọn danh mục.';
-
-    } elseif ($supplierID <= 0) {
-        $error = 'Vui lòng chọn nhà cung cấp.';
-
-    } else {
-
-        $sql = "
-            INSERT INTO products
-            (
-                ProductCode,
-                ProductName,
-                Description,
-                Unit,
-                Price,
-                StockQuantity,
-                IsActive,
-                SupplierID,
-                CategoryID
-            )
-            VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ";
-
-        $stmt = $connection->prepare($sql);
-
-        $stmt->bind_param(
-            'ssssdiiii',
-            $productCode,
-            $productName,
-            $description,
-            $unit,
-            $price,
-            $stockQuantity,
-            $isActive,
-            $supplierID,
-            $categoryID
-        );
-
-        if ($stmt->execute()) {
+    if ($stmt->execute()) {
             header('Location: /products/');
             exit;
-        }
-
-        $error = 'Không thể thêm sản phẩm.';
-        $stmt->close();
     }
+
+    $error = 'Không thể sửa sản phẩm.';
+    $stmt->close();
 }
 
 require_once '/var/www/src/includes/header.php';
 require_once '/var/www/src/includes/navbar.php';
 ?>
 
-<h2 class="my-4 text-center">Thêm danh mục</h2>
-
 <form method="post" class='container py-4'>
     <div class='d-flex justify-content-center align-item-center gap-2 mb-3'>
-        <select name="category_id" class="form-select" required>
-            <option value="">
-                -- Chọn danh mục --
-            </option>
-
-            <?php while ($category = $categories->fetch_assoc()): ?>
-
-                <option
-                    value="<?= htmlspecialchars($_POST['category_id'] ?? '') ?>"
-                >
-                    <?= htmlspecialchars($category['CategoryName']) ?>
+        <select name="category_id" class='w-100' class='form-select'>
+    
+            <?php while ($categorie = $categories->fetch_assoc()): ?>
+                <?php 
+                // Kiểm tra điều kiện selected
+                    $current_category_id = $_POST['category_id'] ?? $product['CategoryID'] ?? '';
+                    $selected = ($categorie['CategoryID'] == $current_category_id) ? 'selected' : '';
+                ?>
+                
+                
+                <option value="<?= htmlspecialchars($categorie['CategoryID']) ?>" <?= $selected ?>>
+                    <?= htmlspecialchars($categorie['CategoryName']) ?>
                 </option>
-
             <?php endwhile; ?>
         </select>
+
         <!-- supplier -->
-        <select name='supplier_id' class='form-select' require>
-            <option value="">
-                -- Chọn nhà cung cấp --
-            </option>
-            
+        <select name="supplier_id" class='w-100' class='form-select'>
+    
             <?php while ($supplier = $suppliers->fetch_assoc()): ?>
-                <option value="<?= htmlspecialchars($_POST['supplier_id'] ?? '') ?>">
+                <?php 
+                // Kiểm tra điều kiện selected
+                    $current_supplier_id = $_POST['supplier_id'] ?? $product['SupplierID'] ?? '';
+                    $selected = ($supplier['SupplierID'] == $current_supplier_id) ? 'selected' : '';
+                ?>
+                
+                <option value="<?= htmlspecialchars($supplier['SupplierID']) ?>" <?= $selected ?>>
                     <?= htmlspecialchars($supplier['SupplierName']) ?>
                 </option>
             <?php endwhile; ?>
@@ -147,7 +165,7 @@ require_once '/var/www/src/includes/navbar.php';
                 id="product_code"
                 name="product_code"
                 required
-                value="<?= htmlspecialchars($_POST['product_code'] ?? '') ?>"
+                value="<?= htmlspecialchars($_POST['product_code'] ?? $product['ProductCode']) ?>"
             >
         </div>
         <div class="mb-3 w-100">
@@ -161,7 +179,7 @@ require_once '/var/www/src/includes/navbar.php';
                 id="product_name"
                 name="product_name"
                 required
-                value="<?= htmlspecialchars($_POST['product_name'] ?? '') ?>"
+                value="<?= htmlspecialchars($_POST['product_name'] ?? $product['ProductName']) ?>"
             >
         </div>
     </div>
@@ -176,8 +194,8 @@ require_once '/var/www/src/includes/navbar.php';
             id="description"
             name="description"
             required
-            value="<?= htmlspecialchars($_POST['description'] ?? '') ?>"
-        ></textarea>
+            value="<?= htmlspecialchars($_POST['description'] ?? $product['Description']) ?>"
+        ><?= htmlspecialchars($_POST['description'] ?? $product['Description'])?></textarea>
     </div>
     <div class="mb-3 w-100">
         <label for="unit" class="form-label">
@@ -190,7 +208,7 @@ require_once '/var/www/src/includes/navbar.php';
             id="unit"
             name="unit"
             required
-            value="<?= htmlspecialchars($_POST['unit'] ?? '') ?>"
+            value="<?= htmlspecialchars($_POST['unit'] ?? $product['Unit']) ?>"
         >
     </div>
     <div class="mb-3 w-100">
@@ -204,7 +222,7 @@ require_once '/var/www/src/includes/navbar.php';
             id="price"
             name="price"
             required
-            value="<?= htmlspecialchars($_POST['price'] ?? '') ?>"
+            value="<?= htmlspecialchars($_POST['price'] ?? $product['Price']) ?>"
         >
     </div>
     <div class="mb-3 w-100">
@@ -218,20 +236,23 @@ require_once '/var/www/src/includes/navbar.php';
             id="stock_quantity"
             name="stock_quantity"
             required
-            value="<?= htmlspecialchars($_POST['stock_quantity'] ?? '') ?>"
+            value="<?= htmlspecialchars($_POST['stock_quantity'] ?? $product['StockQuantity']) ?>"
         >
     </div>
     <div class="mb-3 w-100">
         <label for="is_active" class="form-label">
             Đang kinh doanh
         </label>
-
-        <select
-            name='is_active' class='form-select' require
-            value="<?= htmlspecialchars($_POST['is_active'] ?? '') ?>"
+        <select name='is_active' class='form-select'
         >
-            <option selected value='1'>Đang kinh doanh</option>
-            <option value='0'>Ngừng kinh doanh</option>
+            <option value="<?= htmlspecialchars($_POST['is_active'] ?? '1') ?>" <?= ($product['IsActive'] == 1) ? 'selected' : '' ?>>
+                Đang kinh doanh
+            </option>
+            
+            <!-- Kiểm tra nếu IsActive bằng 0 thì selected -->
+            <option value="<?= htmlspecialchars($_POST['is_active'] ?? '0') ?>" <?= ($product['IsActive'] == 0) ? 'selected' : '' ?>>
+                Ngừng kinh doanh
+            </option>
         </select>
     </div>
 
