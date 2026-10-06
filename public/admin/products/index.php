@@ -33,8 +33,8 @@ $sql = "
 
 $result = $connection->query($sql);
 
-require_once '/var/www/src/includes/header.php';
-require_once '/var/www/src/includes/navbar.php';
+require_once '/var/www/src/includes/admin/header.php';
+require_once '/var/www/src/includes/admin/navbar.php';
 
 ?>
 
@@ -127,12 +127,12 @@ require_once '/var/www/src/includes/navbar.php';
                     </td>
 
                     <td>
-                        <a href="/products/edit.php?id=<?= $product['ProductID'] ?>" class="btn btn-sm btn-warning">
+                        <a href="/admin/products/edit.php?id=<?= $product['ProductID'] ?>" class="btn btn-sm btn-warning">
                             Sửa
                         </a>
 
                         <form
-                            action="/products/delete.php"
+                            action="/admin/products/delete.php"
                             method="post"
                             class="d-inline"
                             onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?');"
@@ -166,6 +166,6 @@ require_once '/var/www/src/includes/navbar.php';
 
 <?php
 
-require_once '/var/www/src/includes/footer.php';
+require_once '/var/www/src/includes/admin/footer.php';
 
 $connection->close();
