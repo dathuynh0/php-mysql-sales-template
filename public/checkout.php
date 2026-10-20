@@ -7,6 +7,74 @@ $pageTitle = 'Đặt hàng';
 
 $cart = $_SESSION['cart'] ?? [];
 
+$isLoggedIn = isset($_SESSION['customer_id']);
+
+$customerID = null;
+$customerName = '';
+$email = '';
+$phone = '';
+$address = '';
+$errorMessage = '';
+
+if ($isLoggedIn) {
+
+    $customerID =
+        (int) $_SESSION['customer_id'];
+
+    $sqlCustomerAccount = "
+        SELECT
+            CustomerID,
+            CustomerName,
+            Email,
+            Phone,
+            Address
+        FROM customers
+        WHERE CustomerID = ?
+          AND Email IS NOT NULL
+    ";
+
+    $stmtCustomerAccount =
+        $connection->prepare($sqlCustomerAccount);
+
+    $stmtCustomerAccount->bind_param(
+        'i',
+        $customerID
+    );
+
+    $stmtCustomerAccount->execute();
+
+    $customerResult =
+        $stmtCustomerAccount->get_result();
+
+    $customer =
+        $customerResult->fetch_assoc();
+
+    $customerResult->free();
+    $stmtCustomerAccount->close();
+
+    if (!$customer) {
+        unset(
+            $_SESSION['customer_id'],
+            $_SESSION['customer_name']
+        );
+
+        header('Location: /login.php');
+        exit;
+    }
+
+    $customerName =
+        $customer['CustomerName'];
+
+    $email =
+        $customer['Email'] ?? '';
+
+    $phone =
+        $customer['Phone'] ?? '';
+
+    $address =
+        $customer['Address'] ?? '';
+}
+
 if (empty($cart)) {
     header('Location: /cart.php');
     exit;
@@ -89,9 +157,19 @@ $address = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST'
     && isset($_POST['place_order'])) {
 
-    $customerName = trim($_POST['customer_name'] ?? '');
-    $phone = trim($_POST['phone'] ?? '');
-    $address = trim($_POST['address'] ?? '');
+    if ($isLoggedIn) {
+        $phone =
+            trim($_POST['phone'] ?? '');
+        $address =
+            trim($_POST['address'] ?? '');
+    } else {
+        $customerName =
+            trim($_POST['customer_name'] ?? '');
+        $phone =
+            trim($_POST['phone'] ?? '');
+        $address =
+            trim($_POST['address'] ?? '');
+    }
 
     if ($customerName === ''
         || $phone === ''
@@ -166,23 +244,90 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'
 
             $stmtProduct->close();
 
-            $sqlCustomer = "
-                INSERT INTO customers
-                    (CustomerName, Address, Phone)
-                VALUES (?, ?, ?)
-            ";
+            /*
+            * 2. Xác định khách hàng.
+            */
+            if ($isLoggedIn) {
+                $sqlAccount = "
+                    SELECT CustomerID
+                    FROM customers
+                    WHERE CustomerID = ?
+                    AND Email IS NOT NULL
+                    FOR UPDATE
+                ";
 
-            $stmtCustomer = $connection->prepare($sqlCustomer);
-            $stmtCustomer->bind_param(
-                'sss',
-                $customerName,
-                $address,
-                $phone
-            );
-            $stmtCustomer->execute();
+                $stmtAccount =
+                    $connection->prepare($sqlAccount);
 
-            $customerID = $connection->insert_id;
-            $stmtCustomer->close();
+                $stmtAccount->bind_param(
+                    'i',
+                    $customerID
+                );
+
+                $stmtAccount->execute();
+
+                $accountResult =
+                    $stmtAccount->get_result();
+
+                $account =
+                    $accountResult->fetch_assoc();
+
+                $accountResult->free();
+                $stmtAccount->close();
+
+                if (!$account) {
+                    throw new Exception(
+                        'Tài khoản khách hàng không còn hợp lệ.'
+                    );
+                }
+
+                $sqlUpdateCustomer = "
+                    UPDATE customers
+                    SET
+                        Phone = ?,
+                        Address = ?
+                    WHERE CustomerID = ?
+                ";
+
+                $stmtUpdateCustomer =
+                    $connection->prepare($sqlUpdateCustomer);
+
+                $stmtUpdateCustomer->bind_param(
+                    'ssi',
+                    $phone,
+                    $address,
+                    $customerID
+                );
+
+                $stmtUpdateCustomer->execute();
+                $stmtUpdateCustomer->close();
+
+            } else {
+
+                $sqlCustomer = "
+                    INSERT INTO customers (
+                        CustomerName,
+                        Address,
+                        Phone
+                    )
+                    VALUES (?, ?, ?)
+                ";
+
+                $stmtCustomer =
+                    $connection->prepare($sqlCustomer);
+
+                $stmtCustomer->bind_param(
+                    'sss',
+                    $customerName,
+                    $address,
+                    $phone
+                );
+
+                $stmtCustomer->execute();
+                $customerID =
+                    $connection->insert_id;
+                $stmtCustomer->close();
+            }
 
             $status = 'Pending';
 
@@ -287,22 +432,65 @@ require_once '/var/www/src/includes/frontend/navbar.php';
 
                     <form method="post">
 
-                        <div class="mb-3">
-                            <label
-                                for="customer_name"
-                                class="form-label"
-                            >
-                                Họ tên
-                            </label>
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="customer_name"
-                                name="customer_name"
-                                value="<?= htmlspecialchars($customerName) ?>"
-                                required
-                            >
-                        </div>
+                        <?php if ($isLoggedIn): ?>
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Họ và tên
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars(
+                                        $customerName
+                                    ) ?>"
+                                    readonly
+                                >
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Email
+                                </label>
+
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars(
+                                        $email
+                                    ) ?>"
+                                    readonly
+                                >
+
+                            </div>
+                        <?php else: ?>
+
+                            <div class="mb-3">
+
+                                <label
+                                    for="customer_name"
+                                    class="form-label"
+                                >
+                                    Họ và tên
+                                </label>
+
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="customer_name"
+                                    name="customer_name"
+                                    value="<?= htmlspecialchars(
+                                        $customerName
+                                    ) ?>"
+                                    required
+                                >
+
+                            </div>
+
+                        <?php endif; ?>
 
                         <div class="mb-3">
                             <label
