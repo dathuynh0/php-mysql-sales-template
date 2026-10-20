@@ -35,7 +35,12 @@
                         Người giao hàng
                     </a>
                 </li>
-
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/orders/">
+                        Đơn hàng
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
