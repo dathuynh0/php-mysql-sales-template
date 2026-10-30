@@ -133,5 +133,49 @@ CREATE TABLE orderdetail (
 ) CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-ALTER TABLE customers
-ADD COLUMN Phone VARCHAR(20) AFTER Country;
+CREATE TABLE purchases (
+    PurchaseID INT AUTO_INCREMENT PRIMARY KEY,
+    PurchaseDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    TotalAmount DECIMAL(12,2) NOT NULL DEFAULT 0,
+    Status VARCHAR(30) NOT NULL DEFAULT 'Completed',
+    Note TEXT,
+    SupplierID INT NOT NULL,
+    EmployeeID INT,
+ 
+    CONSTRAINT chk_purchases_total
+        CHECK (TotalAmount >= 0),
+ 
+    CONSTRAINT fk_purchases_supplier
+        FOREIGN KEY (SupplierID)
+        REFERENCES suppliers(SupplierID),
+ 
+    CONSTRAINT fk_purchases_employee
+        FOREIGN KEY (EmployeeID)
+        REFERENCES employees(EmployeeID)
+) CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+ 
+-- =====================================================
+-- CHI TIẾT PHIẾU NHẬP
+-- UnitCost = giá nhập của 1 đơn vị tại thời điểm nhập
+-- =====================================================
+CREATE TABLE purchasedetail (
+    PurchaseDetailID INT AUTO_INCREMENT PRIMARY KEY,
+    Quantity INT NOT NULL,
+    UnitCost DECIMAL(12,2) NOT NULL,
+    PurchaseID INT NOT NULL,
+    ProductID INT NOT NULL,
+ 
+    CONSTRAINT chk_purchasedetail_quantity CHECK (Quantity > 0),
+    CONSTRAINT chk_purchasedetail_unitcost CHECK (UnitCost >= 0),
+ 
+    CONSTRAINT fk_purchasedetail_purchase
+        FOREIGN KEY (PurchaseID)
+        REFERENCES purchases(PurchaseID)
+        ON DELETE CASCADE,
+ 
+    CONSTRAINT fk_purchasedetail_product
+        FOREIGN KEY (ProductID)
+        REFERENCES products(ProductID)
+) CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;

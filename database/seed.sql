@@ -69,3 +69,25 @@ VALUES
     (2, 450000.00, 1, 3),
     (1, 18500000.00, 2, 2),
     (2, 450000.00, 3, 3);
+
+INSERT INTO purchases
+    (PurchaseDate, TotalAmount, Status, Note, SupplierID, EmployeeID)
+VALUES
+    -- PN00001: 20 x 7.000.000 = 140.000.000
+    ('2026-08-01 09:00:00', 140000000.00, 'Completed',
+     'Nhập lô điện thoại đầu tháng 8', 1, 1),
+ 
+    -- PN00002: 10 x 15.500.000 + 50 x 300.000 = 170.000.000
+    ('2026-08-02 14:30:00', 170000000.00, 'Completed',
+     'Nhập laptop và phụ kiện từ Công ty Thiết bị XYZ', 2, 2),
+ 
+    -- PN00003: 30 x 310.000 = 9.300.000
+    ('2026-08-20 10:15:00', 9300000.00, 'Completed',
+     'Bổ sung chuột không dây', 2, 1);
+ 
+INSERT INTO purchasedetail (Quantity, UnitCost, PurchaseID, ProductID)
+VALUES
+    (20, 7000000.00, 1, 1),
+    (10, 15500000.00, 2, 2),
+    (50, 300000.00, 2, 3),
+    (30, 310000.00, 3, 3);
