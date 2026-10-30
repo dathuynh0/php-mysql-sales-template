@@ -1,47 +1,24 @@
-<nav class="navbar navbar-expand-lg bg-dark navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="/admin">Sales Management</a>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= htmlspecialchars($pageTitle ?? 'Admin') ?> | Sales Management</title>
 
-        <button
-            class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#mainNavbar"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-        <div class="collapse navbar-collapse" id="mainNavbar">
-            <ul class="navbar-nav">
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Trang chủ</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/categories/">
-                        Danh mục
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/products/">
-                        Sản phẩm
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/shippers/">
-                        Người giao hàng
-                    </a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/orders/">
-                        Đơn hàng
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+    <style>
+        @media (min-width: 992px) {
+            #sidebar {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                width: 260px;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex">
