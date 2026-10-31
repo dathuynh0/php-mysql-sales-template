@@ -115,7 +115,7 @@ if (isset($_POST['set_primary_image'])) {
         $connection->commit();
 
         header(
-            'Location: /products/edit.php?id='
+            'Location: /admin/products/edit.php?id='
             . $productID
             . '&primary_updated=1'
         );
@@ -285,7 +285,7 @@ if (isset($_POST['add_images'])) {
                 $connection->commit();
 
                 header(
-                    'Location: /products/edit.php?id='
+                    'Location: /admin/products/edit.php?id='
                     . $productID
                     . '&images_added=1'
                 );

@@ -228,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmtImage->close();
                     $connection->commit();
 
-                    header('Location: /products/');
+                    header('Location: /admin/products/');
                     exit;
 
                 } catch (Throwable $e) {

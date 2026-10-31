@@ -34,16 +34,16 @@ $sql = "
 $result = $connection->query($sql);
 
 require_once '/var/www/src/includes/admin/header.php';
-require_once '/var/www/src/includes/admin/navbar.php';
+require_once '/var/www/src/includes/admin/navbar.php'; 
 
 ?>
 
-<div class="container mt-4">
+<div class="container">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Quản lý sản phẩm</h2>
 
-        <a href="/products/create.php" class="btn btn-primary">
+        <a href="/admin/products/create.php" class="btn btn-primary">
             Thêm sản phẩm
         </a>
     </div>
