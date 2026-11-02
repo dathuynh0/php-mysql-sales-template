@@ -486,6 +486,7 @@ require_once '/var/www/src/includes/frontend/navbar.php';
                                         $customerName
                                     ) ?>"
                                     required
+                                    placeholder="Huỳnh Chí Đạt"
                                 >
 
                             </div>
@@ -506,6 +507,7 @@ require_once '/var/www/src/includes/frontend/navbar.php';
                                 name="phone"
                                 value="<?= htmlspecialchars($phone) ?>"
                                 required
+                                placeholder="0337937146"
                             >
                         </div>
 
@@ -522,6 +524,7 @@ require_once '/var/www/src/includes/frontend/navbar.php';
                                 name="address"
                                 rows="3"
                                 required
+                                placeholder="123 Lạc Long Quân, Xã Long Đức, Tỉnh Vĩnh Long"
                             ><?= htmlspecialchars($address) ?></textarea>
                         </div>
 

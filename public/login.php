@@ -96,82 +96,93 @@ require_once '/var/www/src/includes/frontend/navbar.php';
 
 ?>
 
-<div class="container py-4">
+<div class="container flex-grow-1 d-flex align-items-center justify-content-center py-4">
 
-    <div class="row justify-content-center">
+    <div class="row justify-content-center w-100">
 
         <div class="col-md-7 col-lg-5">
 
-            <h1 class="h3 mb-4">
-                Đăng nhập
-            </h1>
+            <div class="card shadow-sm">
 
-            <?php if (isset($_GET['registered'])): ?>
-
-                <div class="alert alert-success">
-                    Đăng ký thành công.
-                    Bạn có thể đăng nhập.
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">
+                        Đăng nhập
+                    </h1>
                 </div>
 
-            <?php endif; ?>
+                <div class="card-body p-4">
 
-            <?php if ($errorMessage !== ''): ?>
+                    <?php if (isset($_GET['registered'])): ?>
 
-                <div class="alert alert-danger">
-                    <?= htmlspecialchars($errorMessage) ?>
+                        <div class="alert alert-success">
+                            Đăng ký thành công.
+                            Bạn có thể đăng nhập.
+                        </div>
+
+                    <?php endif; ?>
+
+                    <?php if ($errorMessage !== ''): ?>
+
+                        <div class="alert alert-danger">
+                            <?= htmlspecialchars($errorMessage) ?>
+                        </div>
+
+                    <?php endif; ?>
+
+                    <form method="post">
+
+                        <div class="mb-3">
+
+                            <label
+                                for="email"
+                                class="form-label"
+                            >
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="email"
+                                name="email"
+                                value="<?= htmlspecialchars($email) ?>"
+                                required
+                                placeholder="Vd: huynhchidat@gmail.com"
+                            >
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label
+                                for="password"
+                                class="form-label"
+                            >
+                                Mật khẩu
+                            </label>
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="password"
+                                name="password"
+                                required
+                            >
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                        >
+                            Đăng nhập
+                        </button>
+
+                    </form>
+
                 </div>
 
-            <?php endif; ?>
-
-            <form method="post">
-
-                <div class="mb-3">
-
-                    <label
-                        for="email"
-                        class="form-label"
-                    >
-                        Email
-                    </label>
-
-                    <input
-                        type="email"
-                        class="form-control"
-                        id="email"
-                        name="email"
-                        value="<?= htmlspecialchars($email) ?>"
-                        required
-                    >
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label
-                        for="password"
-                        class="form-label"
-                    >
-                        Mật khẩu
-                    </label>
-
-                    <input
-                        type="password"
-                        class="form-control"
-                        id="password"
-                        name="password"
-                        required
-                    >
-
-                </div>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                >
-                    Đăng nhập
-                </button>
-
-            </form>
+            </div>
 
         </div>
 

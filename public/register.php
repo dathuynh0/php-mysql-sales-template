@@ -136,117 +136,130 @@ require_once '/var/www/src/includes/frontend/navbar.php';
 
         <div class="col-md-7 col-lg-5">
 
-            <h1 class="h3 mb-4">
-                Đăng ký tài khoản
-            </h1>
+            <div class="card shadow-sm">
 
-            <?php if ($errorMessage !== ''): ?>
-
-                <div class="alert alert-danger">
-                    <?= htmlspecialchars($errorMessage) ?>
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">
+                        Đăng ký tài khoản
+                    </h1>
                 </div>
 
-            <?php endif; ?>
+                <div class="card-body p-4">
 
-            <form method="post">
+                    <?php if ($errorMessage !== ''): ?>
 
-                <div class="mb-3">
-                    <label
-                        for="customer_name"
-                        class="form-label"
-                    >
-                        Họ và tên
-                    </label>
+                        <div class="alert alert-danger">
+                            <?= htmlspecialchars($errorMessage) ?>
+                        </div>
 
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="customer_name"
-                        name="customer_name"
-                        value="<?= htmlspecialchars(
-                            $customerName
-                        ) ?>"
-                        required
-                    >
+                    <?php endif; ?>
+
+                    <form method="post">
+
+                        <div class="mb-3">
+                            <label
+                                for="customer_name"
+                                class="form-label"
+                            >
+                                Họ và tên
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="customer_name"
+                                name="customer_name"
+                                value="<?= htmlspecialchars(
+                                    $customerName
+                                ) ?>"
+                                placeholder="Vd: Huỳnh Chí Đạt"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label
+                                for="phone"
+                                class="form-label"
+                            >
+                                Số điện thoại
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="phone"
+                                name="phone"
+                                value="<?= htmlspecialchars($phone) ?>"
+                                placeholder="Vd: 0337937146"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label
+                                for="email"
+                                class="form-label"
+                            >
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="email"
+                                name="email"
+                                value="<?= htmlspecialchars($email) ?>"
+                                required
+                                placeholder="Vd: huynhchidat@gmail.com"
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label
+                                for="password"
+                                class="form-label"
+                            >
+                                Mật khẩu
+                            </label>
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="password"
+                                name="password"
+                                required
+                            >
+                        </div>
+
+                        <div class="mb-3">
+                            <label
+                                for="confirm_password"
+                                class="form-label"
+                            >
+                                Xác nhận mật khẩu
+                            </label>
+
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="confirm_password"
+                                name="confirm_password"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-100"
+                        >
+                            Đăng ký
+                        </button>
+
+                    </form>
+
                 </div>
 
-                <div class="mb-3">
-                    <label
-                        for="phone"
-                        class="form-label"
-                    >
-                        Số điện thoại
-                    </label>
-
-                    <input
-                        type="text"
-                        class="form-control"
-                        id="phone"
-                        name="phone"
-                        value="<?= htmlspecialchars($phone) ?>"
-                    >
-                </div>
-
-                <div class="mb-3">
-                    <label
-                        for="email"
-                        class="form-label"
-                    >
-                        Email
-                    </label>
-
-                    <input
-                        type="email"
-                        class="form-control"
-                        id="email"
-                        name="email"
-                        value="<?= htmlspecialchars($email) ?>"
-                        required
-                    >
-                </div>
-
-                <div class="mb-3">
-                    <label
-                        for="password"
-                        class="form-label"
-                    >
-                        Mật khẩu
-                    </label>
-
-                    <input
-                        type="password"
-                        class="form-control"
-                        id="password"
-                        name="password"
-                        required
-                    >
-                </div>
-
-                <div class="mb-3">
-                    <label
-                        for="confirm_password"
-                        class="form-label"
-                    >
-                        Xác nhận mật khẩu
-                    </label>
-
-                    <input
-                        type="password"
-                        class="form-control"
-                        id="confirm_password"
-                        name="confirm_password"
-                        required
-                    >
-                </div>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                >
-                    Đăng ký
-                </button>
-
-            </form>
+            </div>
 
         </div>
 
